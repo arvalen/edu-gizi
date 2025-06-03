@@ -44,7 +44,6 @@ export default function Kalkulator() {
     // Simple calculation logic for demo
     const weight = Number.parseFloat(formData.weight)
     const height = Number.parseFloat(formData.height)
-    const age = Number.parseFloat(formData.age)
 
     let status = "Normal"
     let recommendation = "Pertahankan pola makan sehat dan aktivitas fisik yang cukup."

@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -50,9 +51,11 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="flex justify-center">
-                <img
-                  src="/placeholder.svg?height=300&width=250"
+                <Image
+                  src="/placeholder.svg"
                   alt="Child illustration"
+                  width={250}
+                  height={300}
                   className="rounded-lg shadow-lg"
                 />
               </div>
