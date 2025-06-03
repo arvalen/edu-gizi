@@ -1,8 +1,11 @@
+'use client'
+
 import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Search, Utensils } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const recipes = [
   {
@@ -48,6 +51,8 @@ const recipes = [
 ]
 
 export default function Resep() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -77,7 +82,11 @@ export default function Resep() {
 
         <div className="grid md:grid-cols-2 gap-4">
           {recipes.map((recipe, index) => (
-            <Card key={index} className="bg-white hover:shadow-md transition-shadow">
+            <Card
+              key={index}
+              className="bg-white hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => router.push(`/resep/${index}`)}
+            >
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
