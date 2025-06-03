@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -62,7 +61,7 @@ export default function Resep() {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Image src="/placeholder.svg" alt="Recipe icon" width={40} height={40} className="rounded" />
+                  <Utensils className="w-8 h-8 text-orange-600" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Resep</h2>

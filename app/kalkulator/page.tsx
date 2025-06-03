@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User, UserCheck } from "lucide-react"
+import { User } from "lucide-react"
 
 interface CalculatorData {
   gender: "male" | "female"
@@ -194,7 +194,7 @@ export default function Kalkulator() {
               <div className="flex justify-center gap-8 mt-4">
                 <button
                   onClick={() => setFormData({ ...formData, gender: "male" })}
-                  className={`flex flex-col items-center p-4 rounded-lg border-2 transition-colors ${
+                  className={`flex flex-col items-center p-4 rounded-lg border-2 transition-colors min-w-[140px] min-h-[140px] ${
                     formData.gender === "male" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
@@ -203,13 +203,13 @@ export default function Kalkulator() {
                 </button>
                 <button
                   onClick={() => setFormData({ ...formData, gender: "female" })}
-                  className={`flex flex-col items-center p-4 rounded-lg border-2 transition-colors ${
+                  className={`flex flex-col items-center p-4 rounded-lg border-2 transition-colors min-w-[140px] min-h-[140px] ${
                     formData.gender === "female"
                       ? "border-pink-500 bg-pink-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <UserCheck className="w-12 h-12 mb-2" />
+                  <User className="w-12 h-12 mb-2" />
                   <span className="text-sm">Perempuan</span>
                 </button>
               </div>

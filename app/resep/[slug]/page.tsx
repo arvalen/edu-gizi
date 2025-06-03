@@ -1,8 +1,19 @@
+'use client'
 import { Card, CardContent } from "@/components/ui/card"
+import { ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function ResepDetail() {
+  const router = useRouter()
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center py-10 px-2">
+    <div className="min-h-screen bg-gray-50 flex justify-center py-10 px-2 relative">
+      <button
+        onClick={() => router.push('/resep')}
+        className="absolute left-6 top-6 flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-200 transition"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-medium">Back</span>
+      </button>
       <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8 bg-white rounded-xl shadow-lg p-6">
         <div className="flex flex-col items-center">
           <div className="w-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-4">

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 const navItems = [
   { name: "Dashboard", href: "/" },
@@ -19,10 +20,10 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-center py-4 mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-sm">📚</span>
-            </div>
-            <span className="text-2xl font-bold text-blue-600">EduGizi</span>
+            <Image src="/EduGizi.svg" alt="EduGizi Logo" width={40} height={40} className="w-10 h-10" />
+            <span className="text-3xl font-extrabold">
+              <span style={{ color: '#2196F3' }}>Edu</span><span style={{ color: '#4CAF50' }}>Gizi</span>
+            </span>
           </div>
         </div>
         <nav className="border-t border-purple-200">

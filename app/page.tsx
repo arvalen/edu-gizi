@@ -52,10 +52,10 @@ export default function Dashboard() {
               </div>
               <div className="flex justify-center">
                 <Image
-                  src="/placeholder.svg"
+                  src="/Info.png"
                   alt="Child illustration"
-                  width={250}
-                  height={300}
+                  width={400}
+                  height={320}
                   className="rounded-lg shadow-lg"
                 />
               </div>
