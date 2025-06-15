@@ -118,11 +118,11 @@ export default function Kalkulator() {
                 <div className="bg-yellow-50 p-4 rounded-lg">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">Berat Badan Menurut Usia</h3>
-                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Normal</span>
+                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Tidak Normal</span>
                   </div>
                   <div className="h-48 bg-white rounded border flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-full h-32 bg-gradient-to-r from-red-200 via-yellow-200 via-green-200 to-blue-200 rounded mb-2 relative">
+                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                         </div>
@@ -139,7 +139,7 @@ export default function Kalkulator() {
                   </div>
                   <div className="h-48 bg-white rounded border flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-full h-32 bg-gradient-to-r from-red-200 via-yellow-200 via-green-200 to-blue-200 rounded mb-2 relative">
+                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         </div>
@@ -152,11 +152,11 @@ export default function Kalkulator() {
                 <div className="bg-yellow-50 p-4 rounded-lg">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">Berat Badan Menurut Tinggi Badan</h3>
-                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Normal</span>
+                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Tidak Normal</span>
                   </div>
                   <div className="h-48 bg-white rounded border flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-full h-32 bg-gradient-to-r from-red-200 via-yellow-200 via-green-200 to-blue-200 rounded mb-2 relative">
+                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                         </div>
