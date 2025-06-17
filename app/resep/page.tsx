@@ -26,7 +26,7 @@ export default function Resep() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const RECIPES_PER_PAGE = 10;
+  const RECIPES_PER_PAGE = 12;
 
   useEffect(() => {
     const handler = setTimeout(() => {

@@ -34,7 +34,7 @@ export default function Makanan() {
   const abortRef = useRef<AbortController | null>(null);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const ITEMS_PER_PAGE = 20;
+  const ITEMS_PER_PAGE = 18;
 
   useEffect(() => {
     const handler = setTimeout(() => {
