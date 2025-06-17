@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
 import { getRecipeById, SpoonacularRecipe } from "../../services/spoonacular"
+import { RecipeDetailSkeleton } from "@/components/recipe-detail-skeleton"
 
 interface ApiError extends Error {
   name: string;
@@ -38,11 +39,7 @@ export default function ResepDetail() {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p>Loading resep...</p>
-      </div>
-    );
+    return <RecipeDetailSkeleton />;
   }
 
   if (error) {

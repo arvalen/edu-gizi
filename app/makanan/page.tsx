@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Search, Utensils } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { FoodItemCardSkeleton } from "@/components/food-item-card-skeleton"
+import { Loader2 } from "lucide-react"
 
 interface FoodItem {
   id: number;
@@ -37,7 +39,11 @@ export default function Makanan() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
-      setHasSearched(true);
+      if (searchQuery !== '') { 
+        setHasSearched(true);
+      } else {
+        setHasSearched(false); 
+      }
     }, 500);
     return () => clearTimeout(handler);
   }, [searchQuery]);
@@ -83,14 +89,6 @@ export default function Makanan() {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p>Loading makanan...</p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -131,17 +129,22 @@ export default function Makanan() {
           </div>
         </div>
 
-        {loading && hasSearched && (
-          <div className="flex justify-center py-8">
-            <p>Loading makanan...</p>
+        {loading && !hasSearched && ( 
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <FoodItemCardSkeleton key={i} />
+            ))}
           </div>
         )}
-        {error && (
+
+        {loading && hasSearched && ( 
           <div className="flex justify-center py-8">
-            <p className="text-red-500">{error}</p>
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            <span>Memuat makanan...</span>
           </div>
         )}
-        {foodItems.length > 0 && (
+        
+        {!loading && foodItems.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {foodItems.map((item) => (
               <Card key={item.id} className="bg-white hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push(`/makanan/${item.id}`)}>
@@ -171,6 +174,10 @@ export default function Makanan() {
               </Card>
             ))}
           </div>
+        )}
+
+        {!loading && foodItems.length === 0 && hasSearched && (
+          <p>Tidak ada data makanan yang ditemukan.</p>
         )}
 
         <div className="flex justify-center items-center gap-6 mt-8">

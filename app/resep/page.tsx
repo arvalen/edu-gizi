@@ -8,6 +8,8 @@ import { Search, Utensils } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { searchRecipes, SpoonacularRecipe } from "../services/spoonacular"
 import { Button } from "@/components/ui/button"
+import { RecipeCardSkeleton } from "@/components/recipe-card-skeleton"
+import { Loader2 } from "lucide-react"
 
 interface ApiError extends Error {
   name: string;
@@ -34,7 +36,7 @@ export default function Resep() {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (loading) return; // skip on initial mount
+    if (loading) return; 
     setFetching(true);
     const fetchRecipes = async () => {
       try {
@@ -50,7 +52,7 @@ export default function Resep() {
       }
     };
     fetchRecipes();
-  }, [debouncedSearchQuery, page]);
+  }, [debouncedSearchQuery, page, loading]); 
 
   useEffect(() => {
     // initial mount fetch
@@ -75,14 +77,6 @@ export default function Resep() {
   };
 
   const totalPages = Math.ceil(totalResults / RECIPES_PER_PAGE);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p>Loading resep...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -125,7 +119,11 @@ export default function Resep() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {recipes.length > 0 ? (
+          {loading ? (
+            Array.from({ length: RECIPES_PER_PAGE }).map((_, i) => (
+              <RecipeCardSkeleton key={i} />
+            ))
+          ) : recipes.length > 0 ? (
             recipes.map((recipe) => (
               <Card
                 key={recipe.id}
@@ -159,7 +157,7 @@ export default function Resep() {
         <div className="flex justify-center items-center gap-6 mt-8">
           <Button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1 || loading}
+            disabled={page === 1 || loading || fetching}
             variant="outline"
           >
             Previous
@@ -169,7 +167,7 @@ export default function Resep() {
           </span>
           <Button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages || loading || totalPages === 0}
+            disabled={page === totalPages || loading || fetching || totalPages === 0}
             variant="outline"
           >
             Next
@@ -177,7 +175,8 @@ export default function Resep() {
         </div>
         {fetching && (
           <div className="flex justify-center py-8">
-            <p>Loading resep...</p>
+            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+            <span>Memuat resep...</span>
           </div>
         )}
       </div>

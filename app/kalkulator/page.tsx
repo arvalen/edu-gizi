@@ -1,182 +1,269 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User } from "lucide-react"
+import { User, Calendar, Loader2 } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 interface CalculatorData {
   gender: "male" | "female"
-  age: string
+  birth_date: string
   weight: string
-  height: string
+  length: string
+  headc: string
 }
 
-interface CalculatorResult {
-  status: string
-  recommendation: string
-  charts: {
-    weightForAge: string
-    heightForAge: string
-    weightForHeight: string
+const dateInputStyles = `
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field {
+    color: #6b7280;
   }
-}
+  
+  input[type="date"]:in-range::-webkit-datetime-edit-year-field,
+  input[type="date"]:in-range::-webkit-datetime-edit-month-field,
+  input[type="date"]:in-range::-webkit-datetime-edit-day-field,
+  input[type="date"]:in-range::-webkit-datetime-edit-text {
+    color: transparent;
+  }
+  
+  input[type="date"]:focus-within::-webkit-datetime-edit-text,
+  input[type="date"]:focus-within::-webkit-datetime-edit-month-field,
+  input[type="date"]:focus-within::-webkit-datetime-edit-day-field,
+  input[type="date"]:focus-within::-webkit-datetime-edit-year-field,
+  input[type="date"]:not(:placeholder-shown)::-webkit-datetime-edit-text,
+  input[type="date"]:not(:placeholder-shown)::-webkit-datetime-edit-month-field,
+  input[type="date"]:not(:placeholder-shown)::-webkit-datetime-edit-day-field,
+  input[type="date"]:not(:placeholder-shown)::-webkit-datetime-edit-year-field {
+    color: #111827;
+  }
+`
 
 export default function Kalkulator() {
-  const [showResults, setShowResults] = useState(false)
+  const router = useRouter()
   const [formData, setFormData] = useState<CalculatorData>({
     gender: "male",
-    age: "",
+    birth_date: "",
     weight: "",
-    height: "",
+    length: "",
+    headc: "",
   })
-  const [results, setResults] = useState<CalculatorResult | null>(null)
+  const [displayDate, setDisplayDate] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleCalculate = () => {
-    if (!formData.age || !formData.weight || !formData.height) {
+  const dateInputRef = useRef<HTMLInputElement>(null)
+
+  const handleDateIconClick = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker()
+    }
+  }
+
+  const isValidDate = (day: number, month: number, year: number) => {
+    const date = new Date(year, month - 1, day)
+    return (
+      date.getDate() === day &&
+      date.getMonth() === month - 1 &&
+      date.getFullYear() === year &&
+      date <= new Date()
+    )
+  }
+
+  const handleManualDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const lastChar = inputValue[inputValue.length - 1];
+    
+    if (inputValue.length < displayDate.length) {
+      let newValue = displayDate;
+      
+      if (newValue.endsWith('/')) {
+        newValue = newValue.slice(0, -2);
+      } else {
+        newValue = newValue.slice(0, -1);
+      }
+      
+      setDisplayDate(newValue);
+      
+      const numbers = newValue.replace(/\D/g, '');
+      if (numbers.length === 8) {
+        const day = parseInt(numbers.slice(0, 2));
+        const month = parseInt(numbers.slice(2, 4));
+        const year = parseInt(numbers.slice(4, 8));
+        
+        if (isValidDate(day, month, year)) {
+          const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+          setFormData(prev => ({ ...prev, birth_date: dateStr }));
+        } else {
+          setFormData(prev => ({ ...prev, birth_date: '' }));
+        }
+      } else {
+        setFormData(prev => ({ ...prev, birth_date: '' }));
+      }
+      return;
+    }
+
+    if (!/^\d$/.test(lastChar)) {
+      return;
+    }
+
+    let value = (displayDate + lastChar).replace(/\D/g, '') 
+    
+    let formattedDate = ''
+    for (let i = 0; i < value.length && i < 8; i++) {
+      if (i === 0) {
+        const firstDigit = parseInt(value[i])
+        if (firstDigit > 3) {
+          value = '0' + value.slice(i)
+        }
+      }
+      if (i === 1) {
+        const day = parseInt(value.slice(0, 2))
+        if (day > 31) {
+          value = '31' + value.slice(2)
+        }
+      }
+      if (i === 2) {
+        const firstDigit = parseInt(value[i])
+        if (firstDigit > 1) {
+          value = value.slice(0, 2) + '0' + value.slice(i + 1)
+        }
+      }
+      if (i === 3) {
+        const month = parseInt(value.slice(2, 4))
+        if (month > 12) {
+          value = value.slice(0, 2) + '12' + value.slice(4)
+        }
+      }
+
+      formattedDate += value[i]
+      
+      if (i === 1 || i === 3) {
+        formattedDate += '/'
+      }
+    }
+
+    setDisplayDate(formattedDate)
+
+    if (value.length === 8) {
+      const day = parseInt(value.slice(0, 2))
+      const month = parseInt(value.slice(2, 4))
+      const year = parseInt(value.slice(4, 8))
+
+      if (isValidDate(day, month, year)) {
+        const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+        setFormData(prev => ({ ...prev, birth_date: dateStr }))
+      } else {
+        setFormData(prev => ({ ...prev, birth_date: '' }))
+      }
+    } else {
+      setFormData(prev => ({ ...prev, birth_date: '' }))
+    }
+  }
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value
+    setFormData(prev => ({ ...prev, birth_date: newDate }))
+    
+    const date = new Date(newDate)
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    setDisplayDate(`${day}/${month}/${year}`)
+  }
+
+  useEffect(() => {
+    if (formData.birth_date) {
+      const date = new Date(formData.birth_date)
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
+      setDisplayDate(`${day}/${month}/${year}`)
+    }
+  }, [])
+
+  useEffect(() => {
+    const styleElement = document.createElement('style')
+    styleElement.textContent = dateInputStyles
+    document.head.appendChild(styleElement)
+
+    return () => {
+      document.head.removeChild(styleElement)
+    }
+  }, [])
+
+  const calculateAgeInMonths = (birthDate: string): number => {
+    const birth = new Date(birthDate)
+    const today = new Date()
+    const ageInMs = today.getTime() - birth.getTime()
+    const ageInMonths = Math.floor(ageInMs / (1000 * 60 * 60 * 24 * 30.44))
+    return ageInMonths
+  }
+
+  const handleCalculate = async () => {
+    if (!formData.birth_date || !formData.weight || !formData.length || !formData.headc) {
       alert("Mohon lengkapi semua data")
       return
     }
 
-    // Simple calculation logic for demo
-    const weight = Number.parseFloat(formData.weight)
-    const height = Number.parseFloat(formData.height)
-
-    let status = "Normal"
-    let recommendation = "Pertahankan pola makan sehat dan aktivitas fisik yang cukup."
-
-    // Simple BMI-like calculation for children
-    const heightInM = height / 100
-    const bmi = weight / (heightInM * heightInM)
-
-    if (bmi < 14) {
-      status = "Underweight"
-      recommendation = "Konsultasikan dengan dokter untuk program peningkatan berat badan yang sehat."
-    } else if (bmi > 25) {
-      status = "Overweight"
-      recommendation = "Perhatikan pola makan dan tingkatkan aktivitas fisik."
+    const ageInMonths = calculateAgeInMonths(formData.birth_date)
+    if (ageInMonths < 0 || ageInMonths > 60) {
+      alert("Usia anak harus antara 0-24 bulan")
+      return
     }
 
-    setResults({
-      status,
-      recommendation,
-      charts: {
-        weightForAge: "Normal",
-        heightForAge: "Normal",
-        weightForHeight: status,
-      },
-    })
-    setShowResults(true)
-  }
+    setLoading(true)
 
-  const handleNewData = () => {
-    setShowResults(false)
-    setFormData({
-      gender: "male",
-      age: "",
-      weight: "",
-      height: "",
-    })
-    setResults(null)
-  }
+    const requestBody = {
+      gender: formData.gender,
+      birth_date: formData.birth_date,
+      weight: parseFloat(formData.weight),
+      length: parseFloat(formData.length),
+      headc: parseFloat(formData.headc)
+    }
 
-  if (showResults && results) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <Card className="bg-white">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Kalkulator Perhitungan</CardTitle>
-              <p className="text-sm text-gray-600">Status Perkembangan Gizi Anak</p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div>
-                  <p className="text-sm text-gray-600">Jenis Kelamin</p>
-                  <p className="font-semibold">{formData.gender === "male" ? "Laki-laki" : "Perempuan"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Usia</p>
-                  <p className="font-semibold">{formData.age} Bulan</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Berat Badan</p>
-                  <p className="font-semibold">{formData.weight} Kg</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Tinggi Badan</p>
-                  <p className="font-semibold">{formData.height} Cm</p>
-                </div>
-              </div>
+    console.log('Sending request:', requestBody)
 
-              {/* Chart sections */}
-              <div className="space-y-6">
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold">Berat Badan Menurut Usia</h3>
-                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Tidak Normal</span>
-                  </div>
-                  <div className="h-48 bg-white rounded border flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600">Rekomendasi Berat Badan: 7.8 - 11.8 kg</p>
-                    </div>
-                  </div>
-                </div>
+    try {
+      const response = await fetch('/api/growth-charts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      })
 
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold">Tinggi Badan Menurut Usia</h3>
-                    <span className="bg-green-200 px-3 py-1 rounded text-sm">Status: Normal</span>
-                  </div>
-                  <div className="h-48 bg-white rounded border flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600">Rekomendasi Tinggi Badan: 75 - 85 cm</p>
-                    </div>
-                  </div>
-                </div>
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
 
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold">Berat Badan Menurut Tinggi Badan</h3>
-                    <span className="bg-yellow-200 px-3 py-1 rounded text-sm">Status: Tidak Normal</span>
-                  </div>
-                  <div className="h-48 bg-white rounded border flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-full h-32 bg-blue-50 rounded mb-2 relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600">Rekomendasi Berat Badan: 8.5 - 10.5 kg</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch {
+          console.log('Could not parse error response as JSON')
+        }
+        throw new Error(errorMessage)
+      }
 
-              <div className="text-center">
-                <Button onClick={handleNewData} className="bg-green-600 hover:bg-green-700 text-white px-8">
-                  Data Baru
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
+      const chartsData = await response.json()
+      console.log('Received charts data:', chartsData)
+      
+      sessionStorage.setItem('calculatorFormData', JSON.stringify(formData))
+      sessionStorage.setItem('calculatorChartsData', JSON.stringify(chartsData))
+      router.push('/kalkulator/result')
+
+    } catch (error) {
+      console.error('Error in handleCalculate:', error)
+      alert(error instanceof Error ? error.message : 'Terjadi kesalahan jaringan')
+      setLoading(false)
+    }
   }
 
   return (
@@ -215,20 +302,33 @@ export default function Kalkulator() {
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="age" className="text-sm font-medium">
-                Usia Anak (0-60 Bulan) :
-              </Label>
-              <div className="flex mt-2">
-                <Input
-                  id="age"
-                  type="number"
-                  value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                  className="flex-1"
-                  placeholder="0"
-                />
-                <span className="ml-2 px-3 py-2 bg-gray-100 border rounded-md text-sm">Bulan</span>
+            <div className="grid gap-6">
+              <div className="grid gap-2">
+                <Label>Tanggal Lahir Anak :</Label>
+                <div className="relative flex">
+                  <Input
+                    type="text"
+                    value={displayDate}
+                    onChange={handleManualDateInput}
+                    className="w-full pr-10"
+                    placeholder="DD/MM/YYYY"
+                    maxLength={10}
+                  />
+                  <div 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    onClick={handleDateIconClick}
+                  >
+                    <Calendar className="h-5 w-5 text-gray-500" />
+                  </div>
+                  <Input
+                    ref={dateInputRef}
+                    type="date"
+                    value={formData.birth_date}
+                    onChange={handleDateChange}
+                    className="sr-only"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
@@ -244,25 +344,49 @@ export default function Kalkulator() {
                   value={formData.weight}
                   onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
                   className="flex-1"
-                  placeholder="0"
+                  placeholder="0.0"
+                  min="0.1"
+                  max="30.0"
                 />
                 <span className="ml-2 px-3 py-2 bg-gray-100 border rounded-md text-sm">Kg</span>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="height" className="text-sm font-medium">
+              <Label htmlFor="length" className="text-sm font-medium">
                 Tinggi Badan Anak :
               </Label>
               <div className="flex mt-2">
                 <Input
-                  id="height"
+                  id="length"
                   type="number"
                   step="0.1"
-                  value={formData.height}
-                  onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                  value={formData.length}
+                  onChange={(e) => setFormData({ ...formData, length: e.target.value })}
                   className="flex-1"
-                  placeholder="0"
+                  placeholder="0.0"
+                  min="30.0"
+                  max="120.0"
+                />
+                <span className="ml-2 px-3 py-2 bg-gray-100 border rounded-md text-sm">Cm</span>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="headc" className="text-sm font-medium">
+                Lingkar Kepala Anak :
+              </Label>
+              <div className="flex mt-2">
+                <Input
+                  id="headc"
+                  type="number"
+                  step="0.1"
+                  value={formData.headc}
+                  onChange={(e) => setFormData({ ...formData, headc: e.target.value })}
+                  className="flex-1"
+                  placeholder="0.0"
+                  min="20.0"
+                  max="60.0"
                 />
                 <span className="ml-2 px-3 py-2 bg-gray-100 border rounded-md text-sm">Cm</span>
               </div>
@@ -273,8 +397,19 @@ export default function Kalkulator() {
             </div>
 
             <div className="text-center">
-              <Button onClick={handleCalculate} className="bg-green-600 hover:bg-green-700 text-white px-8">
-                Hitung →
+              <Button 
+                onClick={handleCalculate} 
+                className="bg-green-600 hover:bg-green-700 text-white px-8"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Menghitung...
+                  </>
+                ) : (
+                  "Hitung →"
+                )}
               </Button>
             </div>
           </CardContent>

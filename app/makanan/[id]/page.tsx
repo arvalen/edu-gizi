@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { getIngredientById } from "../../services/spoonacular";
+import { FoodItemDetailSkeleton } from "@/components/food-item-detail-skeleton";
 
 interface Nutrient {
   name: string;
@@ -60,11 +61,7 @@ export default function MakananDetail() {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p>Loading detail makanan...</p>
-      </div>
-    );
+    return <FoodItemDetailSkeleton />;
   }
 
   if (error) {
@@ -138,4 +135,4 @@ export default function MakananDetail() {
       </div>
     </div>
   );
-} 
+}
