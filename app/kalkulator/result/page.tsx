@@ -181,12 +181,12 @@ export default function KalkulatorResult() {
         }
       }
       return (
-        <div className="bg-white rounded border p-4 flex flex-col">
+        <div className="bg-white rounded border border-gray-400 shadow-lg p-4 flex flex-col">
           <h4 className="font-semibold text-sm mb-1">{title}</h4>
           <p className="text-xs text-gray-500 mb-2">{subtitle}</p>
           {status && (
             <div className="mb-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold`} style={{backgroundColor: status.color, color: 'white'}}>
+              <span className={`px-3 py-1 rounded-md text-xs font-semibold`} style={{backgroundColor: status.color, color: 'white'}}>
                 Status: {status.label}
               </span>
             </div>
@@ -251,7 +251,7 @@ export default function KalkulatorResult() {
             />
           </div>
           {rekomendasi && (
-            <div className="mt-3 text-xs text-gray-700 font-medium bg-gray-50 rounded px-3 py-2 border border-gray-200">
+            <div className="mt-3 text-xs text-gray-700 font-medium bg-green-50 rounded px-3 py-2 border border-gray-200">
               {rekomendasi}
             </div>
           )}

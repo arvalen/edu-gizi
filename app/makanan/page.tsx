@@ -146,7 +146,7 @@ export default function Makanan() {
         {!loading && foodItems.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {foodItems.map((item) => (
-              <Card key={item.id} className="bg-white hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push(`/makanan/${item.id}`)}>
+              <Card key={item.id} className="bg-white hover:shadow-emerald-300 transition-shadow cursor-pointer" onClick={() => router.push(`/makanan/${item.id}`)}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
                     <div className="w-24 h-24 flex-shrink-0">

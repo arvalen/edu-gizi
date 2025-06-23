@@ -35,8 +35,8 @@ export function Navbar() {
                 className={cn(
                   "px-8 py-3 text-sm font-medium border-b-2 transition-colors",
                   pathname === item.href
-                    ? "border-purple-500 text-purple-600 bg-purple-50"
-                    : "border-transparent text-gray-600 hover:text-purple-600 hover:border-purple-300",
+                    ? "border-blue-500 text-blue-600 bg-blue-50"
+                    : "border-transparent text-gray-600 hover:text-blue-600 hover:border-blue-300",
                 )}
               >
                 {item.name}

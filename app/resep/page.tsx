@@ -127,7 +127,7 @@ export default function Resep() {
             recipes.map((recipe) => (
               <Card
                 key={recipe.id}
-                className="bg-white hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white hover:shadow-emerald-300 transition-shadow cursor-pointer"
                 onClick={() => router.push(`/resep/${recipe.id}`)}
               >
                 <CardContent className="p-4">
