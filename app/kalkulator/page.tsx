@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User, Calendar, Loader2 } from "lucide-react"
+import { Calendar, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
+import BoyIcon from '@mui/icons-material/Boy';
+import GirlIcon from '@mui/icons-material/Girl';
 
 interface CalculatorData {
   gender: "male" | "female"
@@ -285,7 +287,7 @@ export default function Kalkulator() {
                     formData.gender === "male" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <User className="w-12 h-12 mb-2" />
+                  <BoyIcon style={{ fontSize: 48, color: '#2196f3', marginBottom: 8 }} />
                   <span className="text-sm">Laki-laki</span>
                 </button>
                 <button
@@ -296,7 +298,7 @@ export default function Kalkulator() {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <User className="w-12 h-12 mb-2" />
+                  <GirlIcon style={{ fontSize: 48, color: '#e91e63', marginBottom: 8 }} />
                   <span className="text-sm">Perempuan</span>
                 </button>
               </div>
