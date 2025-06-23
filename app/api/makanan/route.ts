@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await apiKeyManager.makeRequest(url);
-    const data = await response.json();
-    return NextResponse.json(data);
+  const data = await response.json();
+  return NextResponse.json(data);
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch ingredients data' },

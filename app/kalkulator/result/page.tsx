@@ -101,15 +101,80 @@ export default function KalkulatorResult() {
     return ageInMonths
   }
 
+  function getNearestIndex(arr: number[], value: number): number {
+    let nearestIdx = 0;
+    let minDiff = Math.abs(arr[0] - value);
+    for (let i = 1; i < arr.length; i++) {
+      const diff = Math.abs(arr[i] - value);
+      if (diff < minDiff) {
+        minDiff = diff;
+        nearestIdx = i;
+      }
+    }
+    return nearestIdx;
+  }
+
+  function getDetailedStatus(childY: number, percentiles: Record<string, number>) {
+    const p2 = percentiles["2nd"];
+    const p5 = percentiles["5th"];
+    const p10 = percentiles["10th"];
+    const p25 = percentiles["25th"];
+    const p75 = percentiles["75th"];
+    const p90 = percentiles["90th"];
+    const p95 = percentiles["95th"];
+    const p98 = percentiles["98th"];
+
+    if (childY < p2) return { label: "Sangat Kurang", color: "#e53935" };
+    if (childY < p5) return { label: "Kurang", color: "#fb8c00" };
+    if (childY < p10) return { label: "Sedikit di Bawah Normal", color: "#fbc02d" };
+    if (childY < p25) return { label: "Di Bawah Normal", color: "#fdd835" };
+    if (childY < p75) return { label: "Normal", color: "#43a047" };
+    if (childY < p90) return { label: "Di Atas Normal", color: "#1e88e5" };
+    if (childY < p95) return { label: "Sedikit di Atas Normal", color: "#3949ab" };
+    if (childY < p98) return { label: "Lebih", color: "#8e24aa" };
+    return { label: "Sangat Lebih", color: "#d81b60" };
+  }
+
+  interface ChartTrace {
+    name?: string;
+    x: number[];
+    y: number[];
+  }
+
   const renderChart = (chartData: string, title: string, subtitle: string) => {
     if (!chartData) return null
 
     try {
       const parsedChart = JSON.parse(chartData)
+      const childTrace = (parsedChart.data as ChartTrace[]).find((d) => d.name === "Child")
+      const childX = childTrace?.x?.[0]
+      const childY = childTrace?.y?.[0]
+      const percentiles: Record<string, number> = {}
+      for (const trace of parsedChart.data as ChartTrace[]) {
+        if (trace.name && trace.name.includes("percentile")) {
+          const match = trace.name.match(/(\d+)(st|nd|rd|th)/)
+          if (match && typeof childX === 'number') {
+            const perc = match[1] + "th"; // always use th for easier mapping
+            const idx = getNearestIndex(trace.x, childX)
+            percentiles[perc] = trace.y[idx]
+          }
+        }
+      }
+      let status = null
+      if (childY !== undefined && Object.keys(percentiles).length > 0) {
+        status = getDetailedStatus(childY, percentiles)
+      }
       return (
         <div className="bg-white rounded border p-4 flex flex-col">
           <h4 className="font-semibold text-sm mb-1">{title}</h4>
           <p className="text-xs text-gray-500 mb-2">{subtitle}</p>
+          {status && (
+            <div className="mb-2">
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold`} style={{backgroundColor: status.color, color: 'white'}}>
+                Status: {status.label}
+              </span>
+            </div>
+          )}
           <div className="h-[300px] w-full max-w-full">
             <Plot
               data={parsedChart.data}
