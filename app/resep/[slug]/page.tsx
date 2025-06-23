@@ -1,8 +1,7 @@
 'use client'
-import React from 'react'
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Printer } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
 import { getRecipeById, SpoonacularRecipe } from "../../services/spoonacular"
 import { RecipeDetailSkeleton } from "@/components/recipe-detail-skeleton"
@@ -21,6 +20,7 @@ export default function ResepDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     if (slug) {
       const fetchRecipe = async () => {
@@ -37,6 +37,10 @@ export default function ResepDetail() {
       fetchRecipe();
     }
   }, [slug]);
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   if (loading) {
     return <RecipeDetailSkeleton />;
@@ -61,13 +65,26 @@ export default function ResepDetail() {
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center py-10 px-2 relative">
       <button
-        onClick={() => router.push('/resep')}
-        className="absolute left-6 top-6 flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-200 transition"
+        onClick={() => {
+          if (typeof window !== 'undefined' && window.history.length > 1) {
+            router.back();
+          } else {
+            router.push('/resep');
+          }
+        }}
+        className="absolute left-6 top-6 flex items-center gap-2 px-3 py-2 rounded hover:bg-gray-200 transition print:hidden"
       >
         <ArrowLeft className="w-5 h-5" />
         <span className="font-medium">Back</span>
       </button>
-      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8 bg-white rounded-xl shadow-lg p-6">
+      <button
+        onClick={handlePrint}
+        className="absolute right-6 top-6 flex items-center gap-2 px-3 py-2 rounded bg-green-600 text-white hover:bg-green-700 transition shadow print:hidden"
+      >
+        <Printer className="w-5 h-5" />
+        <span>Download</span>
+      </button>
+      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8 bg-white rounded-xl shadow-lg p-6 print-area">
         <div className="flex flex-col items-center">
           <div className="w-full aspect-square rounded-lg overflow-hidden mb-4">
             <img 

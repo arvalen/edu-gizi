@@ -121,3 +121,23 @@
     overflow-y: scroll;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    background: white;
+    box-shadow: none;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}
