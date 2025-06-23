@@ -150,6 +150,7 @@ export default function KalkulatorResult() {
       const childX = childTrace?.x?.[0]
       const childY = childTrace?.y?.[0]
       const percentiles: Record<string, number> = {}
+      let p50Value: number | undefined = undefined
       for (const trace of parsedChart.data as ChartTrace[]) {
         if (trace.name && trace.name.includes("percentile")) {
           const match = trace.name.match(/(\d+)(st|nd|rd|th)/)
@@ -157,12 +158,27 @@ export default function KalkulatorResult() {
             const perc = match[1] + "th"; // always use th for easier mapping
             const idx = getNearestIndex(trace.x, childX)
             percentiles[perc] = trace.y[idx]
+            if (perc === "50th") {
+              p50Value = trace.y[idx]
+            }
           }
         }
       }
       let status = null
       if (childY !== undefined && Object.keys(percentiles).length > 0) {
         status = getDetailedStatus(childY, percentiles)
+      }
+      let rekomendasi = null
+      if (typeof p50Value === 'number') {
+        if (title.toLowerCase().includes('berat badan menurut usia')) {
+          rekomendasi = `Berat badan ideal untuk usia ini adalah ${p50Value.toFixed(2)} kg`;
+        } else if (title.toLowerCase().includes('tinggi badan menurut usia')) {
+          rekomendasi = `Tinggi badan ideal untuk usia ini adalah ${p50Value.toFixed(2)} cm`;
+        } else if (title.toLowerCase().includes('lingkar kepala menurut usia')) {
+          rekomendasi = `Lingkar kepala ideal untuk usia ini adalah ${p50Value.toFixed(2)} cm`;
+        } else if (title.toLowerCase().includes('berat badan menurut tinggi badan')) {
+          rekomendasi = `Berat badan ideal untuk tinggi ini adalah ${p50Value.toFixed(2)} kg`;
+        }
       }
       return (
         <div className="bg-white rounded border p-4 flex flex-col">
@@ -234,6 +250,11 @@ export default function KalkulatorResult() {
               }}
             />
           </div>
+          {rekomendasi && (
+            <div className="mt-3 text-xs text-gray-700 font-medium bg-gray-50 rounded px-3 py-2 border border-gray-200">
+              {rekomendasi}
+            </div>
+          )}
         </div>
       )
     } catch {
