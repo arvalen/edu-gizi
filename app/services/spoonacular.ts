@@ -1,4 +1,5 @@
-const SPOONACULAR_API_KEY = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY;
+import { apiKeyManager } from '../../lib/api-key-manager';
+
 const SPOONACULAR_BASE_URL = 'https://api.spoonacular.com/recipes';
 
 export interface SpoonacularRecipe {
@@ -53,9 +54,9 @@ export interface SpoonacularRecipe {
 }
 
 export async function searchRecipes(query: string = '', offset: number = 0, number: number = 10) {
-  const response = await fetch(
-    `${SPOONACULAR_BASE_URL}/complexSearch?apiKey=${SPOONACULAR_API_KEY}&query=${query}&addRecipeInformation=true&number=${number}&offset=${offset}`
-  );
+  const url = `${SPOONACULAR_BASE_URL}/complexSearch?query=${query}&addRecipeInformation=true&number=${number}&offset=${offset}`;
+  
+  const response = await apiKeyManager.makeRequest(url);
   
   if (!response.ok) {
     throw new Error('Failed to fetch recipes');
@@ -66,27 +67,26 @@ export async function searchRecipes(query: string = '', offset: number = 0, numb
 }
 
 export async function getRecipeById(id: number) {
-  // Get basic recipe information with analyzed instructions
-  const recipeResponse = await fetch(
-    `${SPOONACULAR_BASE_URL}/${id}/information?apiKey=${SPOONACULAR_API_KEY}&addNutrition=true&addAnalyzedInstructions=true`
-  );
+  const recipeUrl = `${SPOONACULAR_BASE_URL}/${id}/information?addNutrition=true&addAnalyzedInstructions=true`;
+  const nutritionUrl = `${SPOONACULAR_BASE_URL}/${id}/nutritionWidget.json`;
+
+  const [recipeResponse, nutritionResponse] = await Promise.all([
+    apiKeyManager.makeRequest(recipeUrl),
+    apiKeyManager.makeRequest(nutritionUrl)
+  ]);
 
   if (!recipeResponse.ok) {
     throw new Error('Failed to fetch recipe details');
   }
 
-  const recipeData = await recipeResponse.json();
-
-  // Get nutrition information
-  const nutritionResponse = await fetch(
-    `${SPOONACULAR_BASE_URL}/${id}/nutritionWidget.json?apiKey=${SPOONACULAR_API_KEY}`
-  );
-
   if (!nutritionResponse.ok) {
     throw new Error('Failed to fetch nutrition information');
   }
 
-  const nutritionData = await nutritionResponse.json();
+  const [recipeData, nutritionData] = await Promise.all([
+    recipeResponse.json(),
+    nutritionResponse.json()
+  ]);
 
   return {
     ...recipeData,
@@ -95,21 +95,30 @@ export async function getRecipeById(id: number) {
 }
 
 export async function searchIngredients(query: string = '', offset: number = 0, number: number = 10) {
-  const response = await fetch(
-    `https://api.spoonacular.com/food/ingredients/search?apiKey=${SPOONACULAR_API_KEY}&query=${query}&number=${number}&offset=${offset}&metaInformation=true`
-  );
+  const url = `https://api.spoonacular.com/food/ingredients/search?query=${query}&number=${number}&offset=${offset}&metaInformation=true`;
+  
+  const response = await apiKeyManager.makeRequest(url);
+  
   if (!response.ok) {
     throw new Error('Failed to fetch ingredients');
   }
+  
   const data = await response.json();
   return { results: data.results, totalResults: data.totalResults };
 }
 
 export async function getIngredientById(id: number) {
-  const apiKey = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY;
-  const response = await fetch(`https://api.spoonacular.com/food/ingredients/${id}/information?apiKey=${apiKey}&amount=100&unit=gram`);
+  const url = `https://api.spoonacular.com/food/ingredients/${id}/information?amount=100&unit=gram`;
+  
+  const response = await apiKeyManager.makeRequest(url);
+  
   if (!response.ok) {
     throw new Error('Failed to fetch ingredient information');
   }
+  
   return await response.json();
+}
+
+export function getApiKeyStatus() {
+  return apiKeyManager.getApiKeyInfo();
 } 
