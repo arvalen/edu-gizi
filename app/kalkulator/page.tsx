@@ -10,6 +10,7 @@ import { Calendar, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
+import { addMonths, format } from 'date-fns';
 
 interface CalculatorData {
   gender: "male" | "female"
@@ -206,6 +207,10 @@ export default function Kalkulator() {
     return ageInMonths
   }
 
+  const today = new Date();
+  const minDate = format(addMonths(today, -24), 'yyyy-MM-dd');
+  const maxDate = format(today, 'yyyy-MM-dd');
+
   const handleCalculate = async () => {
     if (!formData.birth_date || !formData.weight || !formData.length || !formData.headc) {
       alert("Mohon lengkapi semua data")
@@ -213,7 +218,7 @@ export default function Kalkulator() {
     }
 
     const ageInMonths = calculateAgeInMonths(formData.birth_date)
-    if (ageInMonths < 0 || ageInMonths > 60) {
+    if (ageInMonths < 0 || ageInMonths > 24) {
       alert("Usia anak harus antara 0-24 bulan")
       return
     }
@@ -320,15 +325,16 @@ export default function Kalkulator() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                     onClick={handleDateIconClick}
                   >
-                    <Calendar className="h-5 w-5 text-gray-500" />
+                    <Calendar className="w-5 h-5 text-gray-400" />
                   </div>
-                  <Input
+                  <input
                     ref={dateInputRef}
                     type="date"
-                    value={formData.birth_date}
-                    onChange={handleDateChange}
                     className="sr-only"
-                    required
+                    min={minDate}
+                    max={maxDate}
+                    onChange={handleDateChange}
+                    tabIndex={-1}
                   />
                 </div>
               </div>
