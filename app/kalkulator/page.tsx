@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
 import { addMonths, format } from 'date-fns';
+import toast from 'react-hot-toast';
 
 interface CalculatorData {
   gender: "male" | "female"
@@ -213,14 +214,14 @@ export default function Kalkulator() {
 
   const handleCalculate = async () => {
     if (!formData.birth_date || !formData.weight || !formData.length || !formData.headc) {
-      alert("Mohon lengkapi semua data")
-      return
+      toast.error("Mohon lengkapi semua data");
+      return;
     }
 
     const ageInMonths = calculateAgeInMonths(formData.birth_date)
     if (ageInMonths < 0 || ageInMonths > 24) {
-      alert("Usia anak harus antara 0-24 bulan")
-      return
+      toast.error("Usia anak harus antara 0-24 bulan");
+      return;
     }
 
     setLoading(true)
@@ -268,7 +269,7 @@ export default function Kalkulator() {
 
     } catch (error) {
       console.error('Error in handleCalculate:', error)
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan jaringan')
+      toast.error(error instanceof Error ? error.message : 'Terjadi kesalahan jaringan');
       setLoading(false)
     }
   }
