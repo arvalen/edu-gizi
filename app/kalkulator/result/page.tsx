@@ -124,15 +124,15 @@ export default function KalkulatorResult() {
     const p95 = percentiles["95th"];
     const p98 = percentiles["98th"];
 
-    if (childY < p2) return { label: "Sangat Kurang", color: "#e53935" };
-    if (childY < p5) return { label: "Kurang", color: "#fb8c00" };
+    if (childY < p2) return { label: "Sangat Kurang dari Normal (Perlu perhatian khusus)", color: "#e53935" };
+    if (childY < p5) return { label: "Kurang dari Normal (Perlu perhatian)", color: "#fb8c00" };
     if (childY < p10) return { label: "Sedikit di Bawah Normal", color: "#fbc02d" };
     if (childY < p25) return { label: "Di Bawah Normal", color: "#fdd835" };
     if (childY < p75) return { label: "Normal", color: "#43a047" };
     if (childY < p90) return { label: "Di Atas Normal", color: "#1e88e5" };
     if (childY < p95) return { label: "Sedikit di Atas Normal", color: "#3949ab" };
-    if (childY < p98) return { label: "Lebih", color: "#8e24aa" };
-    return { label: "Sangat Lebih", color: "#d81b60" };
+    if (childY < p98) return { label: "Lebih dari Normal (Waspada kelebihan)", color: "#8e24aa" };
+    return { label: "Sangat Lebih dari Normal (Perlu perhatian khusus)", color: "#d81b60" };
   }
 
   interface ChartTrace {
